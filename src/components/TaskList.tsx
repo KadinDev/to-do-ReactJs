@@ -7,7 +7,7 @@ import { FiTrash, FiCheckSquare } from 'react-icons/fi'
 interface Task {
   id: number;
   title: string;
-  isComplete: boolean;
+  isComplete: boolean; // true ou false
 }
 
 export function TaskList() {
@@ -16,14 +16,46 @@ export function TaskList() {
 
   function handleCreateNewTask() {
     // Crie uma nova task com um id random, não permita criar caso o título seja vazio.
+    
+    if(!newTaskTitle) return alert("Espaço vazio não é permitido!")
+
+    const newTask = {
+      id: Math.random(),
+      title: newTaskTitle,
+      isComplete: false
+    }
+
+    // task está como Array
+    // spread operator - ... ele pega os valores que já tem
+    // vou pegar os valores dentro e passar para o array [...oldState
+    // e adiciona no newTask
+    setTasks(oldState => [...oldState, newTask ] )
+    setNewTaskTitle('')
+    
+
   }
 
   function handleToggleTaskCompletion(id: number) {
     // Altere entre `true` ou `false` o campo `isComplete` de uma task com dado ID
+    
+    // mapear as tasks
+    const ckeckTask = tasks.map(task => task.id === id ? {
+      ...task, // pegar todos os valores antigos da task
+      isComplete: !task.isComplete
+    } : task)
+
+    setTasks(ckeckTask)
+
   }
 
   function handleRemoveTask(id: number) {
     // Remova uma task da listagem pelo ID
+
+    // retorna as task onde o id for direfente do id passado acima
+    const filterTasks = tasks.filter(task => task.id !== id )
+
+    setTasks(filterTasks)
+
   }
 
   return (
@@ -34,9 +66,9 @@ export function TaskList() {
         <div className="input-group">
           <input 
             type="text" 
-            placeholder="Adicionar novo todo" 
-            onChange={(e) => setNewTaskTitle(e.target.value)}
-            value={newTaskTitle}
+            placeholder="Adicionar novo todo"
+            onChange={(e) => setNewTaskTitle(e.target.value)} // o que digitar vai estar passando para o setNewTaskTitle
+            value={newTaskTitle} // valor dele
           />
           <button type="submit" data-testid="add-task-button" onClick={handleCreateNewTask}>
             <FiCheckSquare size={16} color="#fff"/>
